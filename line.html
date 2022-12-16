@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>D3 Line Chart</title>
+<style type="text/css">
+body{ font: Arial 18px; text-align: center; }
+
+path{
+stroke: steelblue;
+fill: none;
+stroke-width: 2;
+}
+
+.axis path, .axis line{
+fill: none;
+stroke: grey;
+stroke-width: 1;
+shape-rendering: crispEdges;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+<h3>Basic Line Chart</h3>
+<script type="text/javascript" src="https://d3js.org/d3.v3.js"></script>
+<script type="text/javascript">
+//Set margins and sizes
+var margin = {
+top: 20,
+bottom: 50,
+right: 30,
+left: 50
+};
+
+var width = 700 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom;
+//Create date parser
+var ParseDate = d3.time.format("%d-%b-%y").parse;
+//Create x and y scale to scale inputs
+var xScale = d3.time.scale().range([0, width]);
+var yScale = d3.scale.linear().range([height, 0]);
+
+//Create x and y axes
+var xAxis = d3.svg.axis().scale(xScale)
+.orient("bottom")
+.ticks(5);
+var yAxis = d3.svg.axis().scale(yScale)
+.orient("left")
+.ticks(5);
+
+//Create a line generator
+var valueline = d3.svg.line()
+.x(function(d){
+return xScale(d.date);
+})
+
+.y(function(d){
+return yScale(d.close);
+});
+//Create an SVG element and append it to the DOM
+var svgElement = d3.select("body").append("svg")
+.attr({"width": width+margin.left+margin.right, "height": height+margin.top+margin.bottom})
+.append("g")
+.attr("transform","translate("+margin.left+","+margin.top+")");
+//Read TSV file
+var data = [{
+   "FIELD1": 0,
+   "ID": 1,
+   "Title": "Inception",
+   "Year": 2010,
+   "Age": "13+",
+   "IMDb": 8.8,
+   "Rotten Tomatoes": "87%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Christopher Nolan",
+   "Genres": "Action,Adventure,Sci-Fi,Thriller",
+   "Country": "United States,United Kingdom",
+   "Language": "English,Japanese,French",
+   "Runtime": 148
+ },
+ {
+   "FIELD1": 1,
+   "ID": 2,
+   "Title": "The Matrix",
+   "Year": 1999,
+   "Age": "18+",
+   "IMDb": 8.7,
+   "Rotten Tomatoes": "87%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Lana Wachowski,Lilly Wachowski",
+   "Genres": "Action,Sci-Fi",
+   "Country": "United States",
+   "Language": "English",
+   "Runtime": 136
+ },
+ {
+   "FIELD1": 2,
+   "ID": 3,
+   "Title": "Avengers: Infinity War",
+   "Year": 2018,
+   "Age": "13+",
+   "IMDb": 8.5,
+   "Rotten Tomatoes": "84%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Anthony Russo,Joe Russo",
+   "Genres": "Action,Adventure,Sci-Fi",
+   "Country": "United States",
+   "Language": "English",
+   "Runtime": 149
+ },
+ {
+   "FIELD1": 3,
+   "ID": 4,
+   "Title": "Back to the Future",
+   "Year": 1985,
+   "Age": "7+",
+   "IMDb": 8.5,
+   "Rotten Tomatoes": "96%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Robert Zemeckis",
+   "Genres": "Adventure,Comedy,Sci-Fi",
+   "Country": "United States",
+   "Language": "English",
+   "Runtime": 116
+ },
+ {
+   "FIELD1": 4,
+   "ID": 5,
+   "Title": "The Good, the Bad and the Ugly",
+   "Year": 1966,
+   "Age": "18+",
+   "IMDb": 8.8,
+   "Rotten Tomatoes": "97%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 1,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Sergio Leone",
+   "Genres": "Western",
+   "Country": "Italy,Spain,West Germany",
+   "Language": "Italian",
+   "Runtime": 161
+ },
+ {
+   "FIELD1": 5,
+   "ID": 6,
+   "Title": "Spider-Man: Into the Spider-Verse",
+   "Year": 2018,
+   "Age": "7+",
+   "IMDb": 8.4,
+   "Rotten Tomatoes": "97%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Bob Persichetti,Peter Ramsey,Rodney Rothman",
+   "Genres": "Animation,Action,Adventure,Family,Sci-Fi",
+   "Country": "United States",
+   "Language": "English,Spanish",
+   "Runtime": 117
+ },
+ {
+   "FIELD1": 6,
+   "ID": 7,
+   "Title": "The Pianist",
+   "Year": 2002,
+   "Age": "18+",
+   "IMDb": 8.5,
+   "Rotten Tomatoes": "95%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 1,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Roman Polanski",
+   "Genres": "Biography,Drama,Music,War",
+   "Country": "United Kingdom,France,Poland,Germany",
+   "Language": "English,German,Russian",
+   "Runtime": 150
+ },
+ {
+   "FIELD1": 7,
+   "ID": 8,
+   "Title": "Django Unchained",
+   "Year": 2012,
+   "Age": "18+",
+   "IMDb": 8.4,
+   "Rotten Tomatoes": "87%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Quentin Tarantino",
+   "Genres": "Drama,Western",
+   "Country": "United States",
+   "Language": "English,German,French,Italian",
+   "Runtime": 165
+ },
+ {
+   "FIELD1": 8,
+   "ID": 9,
+   "Title": "Raiders of the Lost Ark",
+   "Year": 1981,
+   "Age": "7+",
+   "IMDb": 8.4,
+   "Rotten Tomatoes": "95%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Steven Spielberg",
+   "Genres": "Action,Adventure",
+   "Country": "United States",
+   "Language": "English,German,Hebrew,Spanish,Arabic,Nepali",
+   "Runtime": 115
+ },
+ {
+   "FIELD1": 9,
+   "ID": 10,
+   "Title": "Inglourious Basterds",
+   "Year": 2009,
+   "Age": "18+",
+   "IMDb": 8.3,
+   "Rotten Tomatoes": "89%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Quentin Tarantino",
+   "Genres": "Adventure,Drama,War",
+   "Country": "Germany,United States",
+   "Language": "English,German,French,Italian",
+   "Runtime": 153
+ },
+ {
+   "FIELD1": 10,
+   "ID": 11,
+   "Title": "Taxi Driver",
+   "Year": 1976,
+   "Age": "18+",
+   "IMDb": 8.3,
+   "Rotten Tomatoes": "95%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Martin Scorsese",
+   "Genres": "Crime,Drama",
+   "Country": "United States",
+   "Language": "English,Spanish",
+   "Runtime": 114
+ },
+ {
+   "FIELD1": 11,
+   "ID": 12,
+   "Title": "3 Idiots",
+   "Year": 2009,
+   "Age": "13+",
+   "IMDb": 8.4,
+   "Rotten Tomatoes": "100%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 1,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Rajkumar Hirani",
+   "Genres": "Comedy,Drama",
+   "Country": "India",
+   "Language": "Hindi,English",
+   "Runtime": 170
+ },
+ {
+   "FIELD1": 12,
+   "ID": 13,
+   "Title": "Pan's Labyrinth",
+   "Year": 2006,
+   "Age": "18+",
+   "IMDb": 8.2,
+   "Rotten Tomatoes": "95%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Guillermo del Toro",
+   "Genres": "Drama,Fantasy,War",
+   "Country": "Mexico,Spain",
+   "Language": "Spanish",
+   "Runtime": 118
+ },
+ {
+   "FIELD1": 13,
+   "ID": 14,
+   "Title": "Room",
+   "Year": 2015,
+   "Age": "18+",
+   "IMDb": 8.1,
+   "Rotten Tomatoes": "93%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Lenny Abrahamson",
+   "Genres": "Drama,Thriller",
+   "Country": "Ireland,Canada,United Kingdom,United States",
+   "Language": "English",
+   "Runtime": 118
+ },
+ {
+   "FIELD1": 14,
+   "ID": 15,
+   "Title": "Monty Python and the Holy Grail",
+   "Year": 1975,
+   "Age": "7+",
+   "IMDb": 8.2,
+   "Rotten Tomatoes": "97%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 0,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Terry Gilliam,Terry Jones",
+   "Genres": "Adventure,Comedy,Fantasy",
+   "Country": "United Kingdom",
+   "Language": "English,French,Latin",
+   "Runtime": 91
+ },
+ {
+   "FIELD1": 15,
+   "ID": 16,
+   "Title": "Once Upon a Time in the West",
+   "Year": 1968,
+   "Age": "13+",
+   "IMDb": 8.5,
+   "Rotten Tomatoes": "95%",
+   "Netflix": 1,
+   "Hulu": 0,
+   "Prime Video": 1,
+   "Disney+": 0,
+   "Type": 0,
+   "Directors": "Sergio Leone",
+   "Genres": "Western",
+   "Country": "Italy,United States",
+   "Language": "Italian,English,Spanish",
+   "Runtime": 165
+ }];
+//Parse Data into useable format
+data.forEach(function (d) {
+    d.date =  Date.parse(d.Year);
+    d.close = (d.IMDb);
+//the + sign converts string automagically to number
+});
+//Set the domains of our scales
+xScale.domain(d3.extent(data, function(d){ return d.date; }));
+yScale.domain([0, d3.max(data, function(d){ return d.close; })]);
+
+//append the svg path
+var path = svgElement.append("path")
+.attr("d", valueline(data));
+
+//Add X Axis
+var x = svgElement.append("g")
+.attr("transform", "translate(0,"+height+")")
+.call(xAxis);
+
+//Add Y Axis
+var y = svgElement.append("g")
+.call(yAxis);
+
+//Add label to y axis
+y.append("text")
+.attr("fill", "#000")
+.attr("transform", "rotate(-90)")
+.attr("y", 6)
+.attr("dy", "0.71em")
+.attr("text-anchor", "end")
+.text("IMDB");
+
+</script>
+</body>
+</html>
